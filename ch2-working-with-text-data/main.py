@@ -1,30 +1,19 @@
-import urllib.request
-import re
-from tokenizer.simple_tokenizer_v1 import SimpleTokenizerV1
-from tokenizer.simple_tokenizer_v2 import SimpleTokenizerV2
+import tiktoken
+from dataset.gpt_dataset_v1 import create_dataloader_v1
 
-url = (
-    "https://raw.githubusercontent.com/rasbt/"
-    "LLMs-from-scratch/main/ch02/01_main-chapter-code/"
-    "the-verdict.txt"
-)
-file_path = "data/the-verdict.txt"
-urllib.request.urlretrieve(url, file_path)
 
-with open(file_path, "r", encoding="utf-8") as f:
-    raw_text = f.read()
+if __name__ == "__main__":
+    tokenizer = tiktoken.get_encoding("gpt2")
+    file_path = "data/the-verdict.txt"
+    with open(file_path, "r", encoding="utf-8") as f:
+        raw_text = f.read()
 
-preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', raw_text)
-preprocessed = [item.strip() for item in preprocessed if item.strip()]
+    dataloader = create_dataloader_v1(
+        raw_text, batch_size=8, max_length=4, stride=4, shuffle=False
+    )
 
-all_tokens = sorted(list(set(preprocessed)))
-all_tokens.extend(["<|endoftext|>", "<|unk|>"])
-vocab = {token: integer for integer, token in enumerate(all_tokens)}
+    data_iter = iter(dataloader)
+    inputs, targets = next(data_iter)
 
-text1 = "Hello, do you like tea?"
-text2 = "In the sunlit terraces of the palace."
-text = " <|endoftext|> ".join((text1, text2))
-
-tokenizer = SimpleTokenizerV2(vocab)
-print(tokenizer.encode(text))
-print(tokenizer.decode(tokenizer.encode(text)))
+    print("Inputs:\n", inputs)
+    print("\nTargets:\n", targets)
