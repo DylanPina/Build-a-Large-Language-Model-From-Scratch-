@@ -8,6 +8,9 @@ from self_attention_v1 import (
 from casual_attention import (
     CausalAttention,
 )
+from multi_head_attention import (
+    MultiHeadAttentionWrapper,
+)
 
 if __name__ == "__main__":
     torch.manual_seed(123)
@@ -122,3 +125,12 @@ if __name__ == "__main__":
     ca = CausalAttention(d_in, d_out, context_length, 0.5)
     context_vecs = ca(batch)
     print("context_vecs.shape:", context_vecs.shape)
+
+    # Multihead attention
+    context_length = batch.shape[1]  # Number of tokens
+    d_in, d_out = 3, 2
+    mha = MultiHeadAttentionWrapper(d_in, d_out, context_length, 0, num_heads=2)
+    context_vecs = mha(batch)
+
+    print(context_vecs)
+    print("MHA context_vecs.shape:", context_vecs.shape)
