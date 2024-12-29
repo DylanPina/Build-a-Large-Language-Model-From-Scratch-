@@ -1,4 +1,5 @@
 import torch
+from self_attention_v1 import SelfAttention_v1
 
 if __name__ == "__main__":
     torch.manual_seed(123)
@@ -49,3 +50,6 @@ if __name__ == "__main__":
 
     context_vec_1 = attn_weights_1 @ values
     print("context_vec_1:", context_vec_1)
+
+    sa_v1 = SelfAttention_v1(d_in, d_out)
+    print("SelfAttentionV1:\n", sa_v1(inputs))
